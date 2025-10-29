@@ -22,14 +22,12 @@ public class PersonalTask : TaskItem, ITask
 
     public override void DisplayDetails()
     {
-        Console.WriteLine($@"The details for Personal TaskItem with Id = {this.TaskId} are :
-                            Title -> {this.Title} 
-                            Description -> {this.Description??"No description"}
-                            Status -> {this.Status}
-                            Due date -> {this.DueDate?.ToString() ?? "No due date"}
-                            Priority -> {this.Priority}
-                            Category -> {this.Category}
-                            ");
+        Console.WriteLine(this.ToString());
+    }
+    
+    public override string ToString()
+    {
+        return $"{base.ToString()}\n Category -> {this.Category}";
     }
 
 }

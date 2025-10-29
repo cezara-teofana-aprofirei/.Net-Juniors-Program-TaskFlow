@@ -7,7 +7,7 @@ namespace TaskFlowApp.Models;
 public class WorkTask : TaskItem, ITask
 {
     public string Department { get; set; }
-    public WorkTask(string title, string? description, DueDate dueDate, string department, Status status = Status.New, Priority priority = Priority.Low)
+    public WorkTask(string title, string? description, DueDate? dueDate, string department, Status status = Status.New, Priority priority = Priority.Low)
                     : base(title, description, dueDate, status, priority)
     {
         this.Department = department;
@@ -18,16 +18,14 @@ public class WorkTask : TaskItem, ITask
     {
         this.Department = existingTask.Department;
     }
-    
+
     public override void DisplayDetails()
     {
-        Console.WriteLine($@"The details for Work TaskItem with Id = {this.TaskId} are :
-                            Title -> {this.Title} 
-                            Description -> {this.Description??"No description"}
-                            Status -> {this.Status}
-                            Due date -> {this.DueDate?.ToString() ?? "No due date"}
-                            Priority -> {this.Priority}
-                            Department -> {this.Department}
-                            ");
+        Console.WriteLine(this.ToString());
+    }
+    
+    public override string ToString()
+    {
+        return $"{base.ToString()}\n Department -> {this.Department}";
     }
 }

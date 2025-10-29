@@ -1,18 +1,20 @@
 using TaskFlowApp.Enums;
 using TaskFlowApp.Exceptions;
+using TaskFlowApp.Interfaces;
 
 namespace TaskFlowApp.Models;
 
 public class Project
 {
-    public string ProjectCode { get; private set; }
+    public Guid ProjectCode { get; private set; }
     public string Name { get; set; }
     public string? Description { get; set; }
     public List<TaskItem> Tasks { get; private set; } = new List<TaskItem>();
+    private static IIdGenerator<Guid> _guidGenerator = new GuidGenerator();
 
-    public Project(string projectCode, string name, string description="")
+    public Project(string name, string? description=null)
     {
-        this.ProjectCode = projectCode;
+        this.ProjectCode = _guidGenerator.CreateId();
         this.Name = name;
         this.Description = description;
     }
@@ -36,13 +38,16 @@ public class Project
 
     public void CompleteTask(TaskItem task)
     {
-        //look for the task in the list and call the function if i can find it
-        
         bool foundTask = false;
         foreach (TaskItem item in Tasks)
         {
             if (item.TaskId == task.TaskId)
             {
+                if (item.Status == Status.Completed)
+                {
+                    Console.WriteLine("Task already completed!");
+                    return;
+                }
                 foundTask = true;
             }
         }
@@ -52,7 +57,7 @@ public class Project
             throw new TaskNotFoundException(task.TaskId);
         }
         
-        task.changeStatus(Status.Completed);
+        task.ChangeStatus(Status.Completed);
         Console.WriteLine($"Task {task.Title} completed successfully!");
     }
 
@@ -60,22 +65,22 @@ public class Project
     {
         foreach (TaskItem task in Tasks)
         {
-            task.changeStatus(Status.Completed);
+            task.ChangeStatus(Status.Completed);
         }
         Console.WriteLine($"Completed all tasks for project with ID :  {this.ProjectCode}");
     }
-    
+
     public void ListOverdue()
     {
         foreach (TaskItem task in Tasks)
         {
-            if(DateTime.Compare(task.DueDate.Deadline, DateTime.Today)<0 && task.Status!=Status.Completed)
+            if (task.DueDate is not null && DateTime.Compare(task.DueDate.Deadline, DateTime.Today) < 0 && task.Status != Status.Completed)
             {
                 //overdue
                 Console.WriteLine($"Task {task.Title} with ID : {task.TaskId}, due date : {task.DueDate.Deadline}, status : {task.Status} is overdue");
             }
         }
     }
-
+    
 }
 

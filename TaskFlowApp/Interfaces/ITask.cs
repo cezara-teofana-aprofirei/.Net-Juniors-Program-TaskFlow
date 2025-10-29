@@ -13,6 +13,6 @@ public interface ITask
     DueDate? DueDate { get; set; }
     Priority Priority { get; set; }
 
-    void changeStatus(Status newStatus);
+    void ChangeStatus(Status newStatus);
     void DisplayDetails();
 }

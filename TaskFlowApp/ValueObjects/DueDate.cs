@@ -1,24 +1,17 @@
 namespace TaskFlowApp.ValueObjects;
 
-public class DueDate
+public record DueDate
 {
-    public DateTime Deadline { get; }
+    public DateTime Deadline { get; init; }
 
     public DueDate(DateTime value, bool isPastDueDateAllowed = false)
     {
-        if (!isPastDueDateAllowed)
+        if (!isPastDueDateAllowed && value.Date < DateTime.Today)
         {
-            if (value.Date < DateTime.Today)
-            {
-                Console.WriteLine("Due date cannot be in the past");
-                return;
-            }
-            Deadline = value;
+            throw new ArgumentException("Due date cannot be in past");
         }
-        else
-        {
-            Deadline = value;
-        }
+        
+        Deadline = value;
     }
     public override string ToString()
     {
