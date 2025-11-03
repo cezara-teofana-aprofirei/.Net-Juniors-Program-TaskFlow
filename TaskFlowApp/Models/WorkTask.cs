@@ -4,7 +4,7 @@ using TaskFlowApp.ValueObjects;
 
 namespace TaskFlowApp.Models;
 
-public class WorkTask : TaskItem, ITask
+public class WorkTask : TaskItem
 {
     public string Department { get; set; }
     public WorkTask(string title, string? description, DueDate? dueDate, string department, Status status = Status.New, Priority priority = Priority.Low)
@@ -26,6 +26,14 @@ public class WorkTask : TaskItem, ITask
     
     public override string ToString()
     {
-        return $"{base.ToString()}\n Department -> {this.Department}";
+        return $"{base.ToString()}\n Department -> {this.Department}\n Type -> Work task";
+    }
+
+    public override void CopySpecificType(TaskItem other)
+    {
+        if (other is WorkTask task)
+        {
+            this.Department = task.Department;
+        }
     }
 }

@@ -5,17 +5,20 @@ using TaskFlowApp.ValueObjects;
 
 namespace TaskFlowApp.Models;
 
-public abstract class TaskItem : IEquatable<TaskItem>, IComparable<TaskItem>
+public abstract class TaskItem : IEquatable<TaskItem>, IComparable<TaskItem>, IIdentifiable<Guid>, ITask
 {
     private string _title = string.Empty;
     private string? _description;
-    
-    private static IIdGenerator<Guid> _guidGenerator = new GuidGenerator();
 
     //do i need to provide validation for this field since the DueDate class already does at creation?
     //private DueDate _dueDate;
     private const int MaxTitleLength = 100;
     private const int MaxDescriptionLength = 600;
+    private static IIdGenerator<Guid> _guidGenerator = new GuidGenerator();
+    public static void ConfigureGenerator(IIdGenerator<Guid> generator)
+    {
+        _guidGenerator = generator;
+    }
     public Guid TaskId { get; }
     public string Title
     {
@@ -95,6 +98,11 @@ public abstract class TaskItem : IEquatable<TaskItem>, IComparable<TaskItem>
         return this.TaskId == other.TaskId;
     }
 
+    public Guid GetId()
+    {
+        return TaskId;
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is TaskItem && Equals((TaskItem)obj);
@@ -125,12 +133,14 @@ public abstract class TaskItem : IEquatable<TaskItem>, IComparable<TaskItem>
 
     public override string ToString()
     {
-        return $@"The details for Work TaskItem with Id = {this.TaskId} are :
+        return $@"The details for Task with Id = {this.TaskId} are :
                             Title -> {this.Title} 
                             Description -> {this.Description ?? "No description"}
                             Status -> {this.Status}
                             Due date -> {this.DueDate?.ToString() ?? "No due date"}
                             Priority -> {this.Priority}";
     }
+
+    public abstract void CopySpecificType(TaskItem other);
 
 }
