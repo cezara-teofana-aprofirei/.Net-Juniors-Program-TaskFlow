@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using TaskFlowApp.Enums;
 using TaskFlowApp.Exceptions;
 using TaskFlowApp.Interfaces;
@@ -5,13 +6,14 @@ using TaskFlowApp.ValueObjects;
 
 namespace TaskFlowApp.Models;
 
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "TaskType")]
+[JsonDerivedType(typeof(PersonalTask), "Personal")]
+[JsonDerivedType(typeof(WorkTask), "Work")]
 public abstract class TaskItem : IEquatable<TaskItem>, IComparable<TaskItem>, IIdentifiable<Guid>, ITask
 {
     private string _title = string.Empty;
     private string? _description;
-
-    //do i need to provide validation for this field since the DueDate class already does at creation?
-    //private DueDate _dueDate;
+    
     private const int MaxTitleLength = 100;
     private const int MaxDescriptionLength = 600;
     private static IIdGenerator<Guid> _guidGenerator = new GuidGenerator();
@@ -19,7 +21,8 @@ public abstract class TaskItem : IEquatable<TaskItem>, IComparable<TaskItem>, II
     {
         _guidGenerator = generator;
     }
-    public Guid TaskId { get; }
+    public Guid TaskId { get; set; }
+
     public string Title
     {
         get => _title;
@@ -63,6 +66,18 @@ public abstract class TaskItem : IEquatable<TaskItem>, IComparable<TaskItem>, II
         this.Status = status;
         this.DueDate = dueDate;
         this.Priority = priority;
+    }
+    
+    [JsonConstructor]
+    protected TaskItem(Guid taskId, string title, string? description, DueDate? dueDate,
+        Status status, Priority priority)
+    {
+        TaskId = taskId;               
+        Title = title;                 
+        Description = description;
+        Status = status;
+        DueDate = dueDate;              
+        Priority = priority;
     }
 
     //copy constructor
@@ -116,8 +131,7 @@ public abstract class TaskItem : IEquatable<TaskItem>, IComparable<TaskItem>, II
     public int CompareTo(TaskItem? other)
     {
         if (other == null) return 1;
-
-        //compare by dueDate
+        
         if (this.DueDate is not null && other.DueDate is not null)
         {
             int dueDateComparison = DateTime.Compare(this.DueDate.Deadline, other.DueDate.Deadline);
@@ -126,8 +140,7 @@ public abstract class TaskItem : IEquatable<TaskItem>, IComparable<TaskItem>, II
                 return dueDateComparison;
             }
         }
-        //compare by priority
-        //compareTo uses enum natural order since they have numbers assigned 
+        
         return this.Priority.CompareTo(other.Priority);
     }
 
