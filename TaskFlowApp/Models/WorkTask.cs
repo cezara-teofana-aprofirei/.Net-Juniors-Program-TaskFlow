@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using TaskFlowApp.Enums;
 using TaskFlowApp.Interfaces;
 using TaskFlowApp.ValueObjects;
@@ -12,6 +13,15 @@ public class WorkTask : TaskItem
     {
         this.Department = department;
     }
+    
+    [JsonConstructor]
+    public WorkTask(Guid taskId, string title, string? description, DueDate? dueDate,
+        string department, Status status, Priority priority)
+        : base(taskId, title, description, dueDate, status, priority)
+    {
+        Department = department; 
+    }
+    
     
     //copy ctor
     public WorkTask(WorkTask existingTask) : base(existingTask)

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace TaskFlowApp.ValueObjects;
 
 public record DueDate
@@ -13,6 +15,13 @@ public record DueDate
         
         Deadline = value;
     }
+    
+    [JsonConstructor]
+    public DueDate(DateTime deadline)
+    {
+        Deadline = deadline;
+    }
+    
     public override string ToString()
     {
         return Deadline.ToShortDateString();

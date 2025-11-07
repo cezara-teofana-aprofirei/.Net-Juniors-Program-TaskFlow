@@ -7,7 +7,9 @@ public class TaskNotFoundException : Exception
     {}
 
     public TaskNotFoundException(Guid taskId) : base($"Task with Id {taskId} was not found.")
-    {}
+    {
+        TaskId = taskId;
+    }
 
     public TaskNotFoundException(string message) : base(message)
     {}
